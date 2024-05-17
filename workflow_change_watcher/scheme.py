@@ -15,6 +15,7 @@ class Lib(BaseModel):
     name: str
     files: List[File]
 
+
 class Diff(BaseModel):
     file_checked: Optional[File]
     file_trusted: File
@@ -59,7 +60,6 @@ class BaseChecksumStorage:
 
 
 class FileChecksumStorage(BaseChecksumStorage, BaseModel):
-    libs: Dict[str, Lib] = {}
     trusted: bool = False
 
     def get_checksum_file_by_relative_filename(self, filename: str,
@@ -82,5 +82,3 @@ class FileChecksumStorage(BaseChecksumStorage, BaseModel):
                 if file.checksum != other_file.checksum:
                     diffs.append(Diff(file_checked=other_file, file_trusted=file))
         return diffs
-
-
