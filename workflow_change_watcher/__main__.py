@@ -62,9 +62,7 @@ def fetch_trusted_files(trusted_path: pathlib.Path,
     if repo:
         pip_install_command.append(repo)
 
-    subprocess.check_call(pip_install_command,
-                          stderr=sys.stdout,
-                          stdout=sys.stdout)
+    subprocess.check_call(pip_install_command, stdout=sys.stdout, stderr=sys.stderr)
 
 
 def configure_logger(logger_):
@@ -98,7 +96,7 @@ def main():
     checksum_generator = FileChecksumGenerator()
 
     need_to_check_dir: pathlib.Path = pathlib.Path(args.check_file) or get_current_site_package_dir()
-    need_to_check_dir_storage = checksum_generator.generate_checksums(need_to_check_dir, config.LIBS_TO_CHECK)
+    need_to_check_dir_storage = checksum_generator.generate_checksum(need_to_check_dir, config.LIBS_TO_CHECK)
 
     logger.debug(f"Путь до папки которую нужно проверить {need_to_check_dir}")
 
@@ -111,7 +109,7 @@ def main():
         get_diffs(diffs, need_to_check_dir, trusted_path)
 
     else:
-        trusted_checksum = checksum_generator.generate_checksums(trusted_path, config.LIBS_TO_CHECK)
+        trusted_checksum = checksum_generator.generate_checksum(trusted_path, config.LIBS_TO_CHECK)
         trusted_checksum.trusted = True
         diffs = trusted_checksum.compare(need_to_check_dir_storage)
         get_diffs(diffs, need_to_check_dir, trusted_path)

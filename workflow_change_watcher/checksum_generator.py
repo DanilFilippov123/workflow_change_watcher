@@ -11,7 +11,7 @@ class BaseChecksumGenerator:
 
 
 class FileChecksumGenerator(BaseChecksumGenerator):
-    def generate_checksums(self, base_path: pathlib.Path, libs_names: List[str]) -> FileChecksumStorage:
+    def generate_checksum(self, base_path: pathlib.Path, libs_names: List[str]) -> FileChecksumStorage:
         """
         Генерирует контрольные суммы библиотек
         :param base_path: Путь до папки, где лежат библиотеки
