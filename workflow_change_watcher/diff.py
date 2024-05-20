@@ -1,16 +1,22 @@
 import difflib
+import logging
 import pathlib
 
 from workflow_change_watcher.scheme import FileRemoved, Diffs
+
+logger = logging.getLogger(__name__)
 
 
 def get_diffs(diffs: Diffs,
               checked_lib: pathlib.Path,
               trusted_lib: pathlib.Path):
+    logger.debug(f"Выводим разницу между контрольной {checked_lib} и доверенной папками {trusted_lib}")
     for diff in diffs.diffs:
         if isinstance(diff, FileRemoved):
             print(f"Файл {diff.file_trusted.relative_name} был удален")
             continue
+
+        logger.debug(f"Выводим разницу между {diff.file_checked.relative_name} и {diff.file_trusted.relative_name}")
 
         first_file_path = pathlib.Path(f"{checked_lib}/{diff.file_checked.relative_name}")
         second_file_path = pathlib.Path(f"{trusted_lib}/{diff.file_trusted.relative_name}")

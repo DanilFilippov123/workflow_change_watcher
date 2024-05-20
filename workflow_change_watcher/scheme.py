@@ -1,9 +1,12 @@
+import logging
 import pathlib
 from typing import List, Dict, Optional
 
 from pydantic import BaseModel
 
 from workflow_change_watcher.checksum_calculator import ChecksumCalculator
+
+logger = logging.getLogger(__name__)
 
 
 class File(BaseModel):
@@ -32,34 +35,18 @@ class Diffs(BaseModel):
         self.diffs.append(diff)
 
 
-class BaseChecksumStorage:
+class BaseChecksumStorage(BaseModel):
     libs: Dict[str, Lib] = {}
 
     def get_checksum_file_by_relative_filename(self, filename: str,
                                                lib_name: str):
         pass
 
-    def generate_checksums(self, base_path: pathlib.Path, libs_names: List[str]) -> None:
-        """
-        Генерирует контрольные суммы библиотек
-        :param base_path: Путь до папки, где лежат библиотеки
-        :param libs_names: Список имён библиотек, которые нужно обработать
-        """
-        if not base_path.is_dir():
-            raise RuntimeError("Должна быть папка")
-
-        for dir_ in base_path.iterdir():
-            if dir_.name in libs_names:
-                self.libs[dir_.name] = (Lib(name=dir_.name, files=[]))
-                for file in dir_.glob("**/*.py"):
-                    with open(file, "rb") as f:
-                        checksum = ChecksumCalculator.default_checksum(f)
-                    new_file_checksum = File(relative_name=str(file.relative_to(base_path)),
-                                             checksum=checksum)
-                    self.libs[dir_.name].files.append(new_file_checksum)
+    def compare(self, other: "BaseChecksumStorage") -> Diffs:
+        pass
 
 
-class FileChecksumStorage(BaseChecksumStorage, BaseModel):
+class FileChecksumStorage(BaseChecksumStorage):
     trusted: bool = False
 
     def get_checksum_file_by_relative_filename(self, filename: str,
